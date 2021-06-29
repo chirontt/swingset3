@@ -107,8 +107,6 @@ public class Demo {
     
     private State state;
     
-    private Exception failException;
-    
     private PropertyChangeSupport pcs;
     
     public Demo(Class<?> demoClass) {
@@ -200,15 +198,30 @@ public class Demo {
             // If meta-data is not specified then sourceFilePaths contains
             // one empty string. In this case we skip it.
             if (!(sourceFilePaths.length == 1 && sourceFilePaths[0].length() == 0)) {
+                // load source code from classpath, or from current directory?
+                // (default is to load from classpath, unless overridden
+                // by a 'sources.in.user.dir=true' system property)
+                boolean sourcesInUserDir = Boolean.getBoolean("sources.in.user.dir");
+                ClassLoader classLoader = getClass().getClassLoader();
                 String currDir = System.getProperty("user.dir").replace("\\", "/").replaceFirst("^[A-Z]:", "");
                 for (String path : sourceFilePaths) {
-                	try {
-						URL url = new URL("file://" + currDir + "/src/" + path);
-						pathURLs.add(url);
-					} catch (MalformedURLException e) {
-						SwingSet3.logger.log(Level.WARNING,
-                                "unable to load source file '" + path + "'");
-					}
+                    if (sourcesInUserDir) {
+                        try {
+                            URL url = new URL("file://" + currDir + "/src/" + path);
+                            pathURLs.add(url);
+                        } catch (MalformedURLException e) {
+                            SwingSet3.logger.log(Level.WARNING,
+                                    "unable to load source file '" + path + "' from the file system");
+                        }
+                    } else {
+                        URL url = classLoader.getResource(path);
+                        if (url == null) {
+                            SwingSet3.logger.log(Level.WARNING,
+                                    "unable to load source file '" + path + "' from the classpath");
+                        } else {
+                            pathURLs.add(url);
+                        }
+                    }
                 }
             }
 
@@ -228,7 +241,6 @@ public class Demo {
             IllegalArgumentException e =
                     new IllegalArgumentException("component must be an instance of " +
                     demoClass.getCanonicalName());
-            failException = e;
             throw e;
         }
         Component old = this.component;
@@ -251,7 +263,6 @@ public class Demo {
         } catch (Exception e) {
             System.err.println(e);
             e.printStackTrace();
-            failException = e;
             setState(State.FAILED);
         }        
         return component;          
@@ -289,16 +300,13 @@ public class Demo {
             // okay, no init method exists
         } catch (IllegalAccessException iae) {
             SwingSet3.logger.log(Level.SEVERE, "unable to init demo: "+demoClass.getName(), iae);
-            failException = iae;
             setState(State.FAILED);
         } catch (java.lang.reflect.InvocationTargetException ite) {
             SwingSet3.logger.log(Level.SEVERE, "init method failed for demo: "+demoClass.getName(), ite);
-            failException = ite;
             setState(State.FAILED);
         } catch (NullPointerException npe) {
             SwingSet3.logger.log(Level.SEVERE, "init method called before demo was instantiated: "
                     +demoClass.getName(), npe);
-            failException = npe;
             setState(State.FAILED);
         }
     }
@@ -314,16 +322,13 @@ public class Demo {
             // okay, no start method exists
         } catch (IllegalAccessException iae) {
             SwingSet3.logger.log(Level.SEVERE, "unable to start demo: "+demoClass.getName(), iae);
-            failException = iae;
             setState(State.FAILED);
         } catch (java.lang.reflect.InvocationTargetException ite) {
             SwingSet3.logger.log(Level.SEVERE, "start method failed for demo: "+demoClass.getName(), ite);
-            failException = ite;
             setState(State.FAILED);
         } catch (NullPointerException npe) {
             SwingSet3.logger.log(Level.SEVERE, "start method called before demo was instantiated: "
                     +demoClass.getName(), npe);
-            failException = npe;
             setState(State.FAILED);
         }
     }
@@ -339,11 +344,9 @@ public class Demo {
 
         } catch (IllegalAccessException iae) {
             SwingSet3.logger.log(Level.SEVERE, "unable to stop demo: "+demoClass.getName(), iae);
-            failException = iae;
             setState(State.FAILED);
         } catch (java.lang.reflect.InvocationTargetException ite) {
             SwingSet3.logger.log(Level.SEVERE, "stop method failed for demo: "+demoClass.getName(), ite);
-            failException = ite;
             setState(State.FAILED);
         } catch (NullPointerException npe) {
             SwingSet3.logger.log(Level.SEVERE, "stop method called before demo was instantiated: "
