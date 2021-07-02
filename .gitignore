@@ -1,8 +1,11 @@
 .DS_Store
 .classpath
+.idea
 .gradle
+.project
 .settings
-bin/
+.vscode
+bin
 build
 dist
 target
