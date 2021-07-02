@@ -4,7 +4,7 @@ plugins {
 }
 
 wrapper {
-    gradleVersion = "7.1"
+    gradleVersion = '7.1.1'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -154,5 +154,15 @@ nativeImage {
 
 generateNativeImageConfig {
     enabled = false
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+    //turn off doclint errors/warnings output (but some warnings are still in the output)
+    options.addStringOption('Xdoclint:none', '-quiet')
+    //force the generation of frames!
+    options.addBooleanOption('-frames', true)
+    //don't fail the task if javadoc errors exist
+    failOnError = false
 }
 

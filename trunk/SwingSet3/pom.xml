@@ -123,6 +123,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <quiet>true</quiet>
+                    <doclint>none</doclint>
+                    <!-- force the generation of frames! -->
+                    <additionalOptions>--frames</additionalOptions>
+                    <failOnError>false</failOnError>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -160,7 +172,7 @@
                 <current.platform>windows</current.platform>
             </properties>
         </profile>
-        <!-- platform-specific native image profiles -->
+        <!-- platform-specific profiles for native image generation -->
         <profile>
             <id>native-linux</id>
             <build>
