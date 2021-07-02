@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sun.swingset3</groupId>
+    <artifactId>swingset3</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>SwingSet3</name> <!-- name of the resulting native executable -->
+    <description>SwingSet3 sample application</description>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <native.maven.plugin.version>0.9.1</native.maven.plugin.version>
+        <main.class>com.sun.swingset3.SwingSet3</main.class>
+        <!-- system properties for the application when run by exec:exec command;
+             can be specified on the command line with -Dsys.props="..."
+        -->
+        <sys.props></sys.props>
+        <nativeImageDirName>native-image-${current.platform}</nativeImageDirName>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>appframework</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.swinglabs.swingx</groupId>
+            <artifactId>swingx-all</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.timingframework</groupId>
+            <artifactId>timingframework</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jnlp</groupId>
+            <artifactId>jnlp-api</artifactId>
+            <version>1.8</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jnlp.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <!-- include all Java source code and other resources -->
+            <resource>
+                <directory>src</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <!-- include the GraalVM native-image configuration files -->
+            <resource>
+                <directory>graal-cfg/${current.platform}</directory>
+                <includes>
+                    <include>META-INF/**/*</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <!-- GraalVM's agent to generate (or merge with) native-image configuration files -->
+                        <!-- argument>-agentlib:native-image-agent=config-merge-dir=graal-cfg/${current.platform}/META-INF/native-image</argument -->
+                        <argument>${sys.props}</argument>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>${main.class}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+            <!-- create a stand-alone executable uber jar with splash screen
+                 including all dependencies and all SwingSet3 source code -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>no-deps-with-sources</shadedClassifierName>
+                            <transformers>
+                                <transformer
+                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Main-Class>${main.class}</Main-Class>
+                                        <SplashScreen-Image>com/sun/swingset3/resources/images/splash.png</SplashScreen-Image>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <properties>
+                <current.platform>linux</current.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>macosx</id>
+            <activation>
+                <os>
+                    <name>mac os x</name>
+                </os>
+            </activation>
+            <properties>
+                <current.platform>macos</current.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <current.platform>windows</current.platform>
+            </properties>
+        </profile>
+        <!-- platform-specific native image profiles -->
+        <profile>
+            <id>native-linux</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <executions>
+                            <!-- execution>
+                                <id>test-native</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>test</phase>
+                            </execution -->
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- outputDir>${project.build.directory}/${nativeImageDirName}</outputDir -->
+                            <imageName>${project.name}</imageName>
+                            <mainClass>${main.class}</mainClass>
+                            <buildArgs>
+                                -Djava.awt.headless=false
+                                --no-fallback
+                                --enable-http
+                                --enable-https
+                                --report-unsupported-elements-at-runtime
+                                --allow-incomplete-classpath
+                                --native-image-info
+                                -H:+TraceNativeToolUsage
+                                -H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}
+                                -H:Path=${project.build.directory}/${nativeImageDirName}
+                            </buildArgs>
+                            <skip>false</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>native-windows</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <executions>
+                            <!-- execution>
+                                <id>test-native</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>test</phase>
+                            </execution -->
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- outputDir>${project.build.directory}/${nativeImageDirName}</outputDir -->
+                            <imageName>${project.name}</imageName>
+                            <mainClass>${main.class}</mainClass>
+                            <buildArgs>
+                                --no-fallback
+                                --enable-http
+                                --enable-https
+                                --report-unsupported-elements-at-runtime
+                                --allow-incomplete-classpath
+                                --native-image-info
+                                -H:+TraceNativeToolUsage
+                                -H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}
+                                -H:Path=${project.build.directory}/${nativeImageDirName}
+                            </buildArgs>
+                            <skip>false</skip>
+                        </configuration>
+                    </plugin>
+                    <!-- copy the font config files from the JDK -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-font-config-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/${nativeImageDirName}/lib</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${java.home}/lib</directory>
+                                            <includes>
+                                                <include>fontconfig.bfc</include>
+                                                <include>fontconfig.properties.src</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

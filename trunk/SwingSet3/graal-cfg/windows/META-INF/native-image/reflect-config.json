@@ -960,7 +960,10 @@
 },
 {
   "name":"javax.swing.plaf.basic.BasicListUI",
-  "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
+  "methods":[
+    {"name":"createUI","parameterTypes":["javax.swing.JComponent"] }, 
+    {"name":"loadActionMap","parameterTypes":["javax.swing.plaf.basic.LazyActionMap"] }
+  ]
 },
 {
   "name":"javax.swing.plaf.basic.BasicMenuBarUI",

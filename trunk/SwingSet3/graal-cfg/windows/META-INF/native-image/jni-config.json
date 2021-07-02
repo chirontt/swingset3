@@ -22,6 +22,9 @@
   ]
 },
 {
+  "name":"java.awt.Canvas"
+},
+{
   "name":"java.awt.Color",
   "methods":[
     {"name":"<init>","parameterTypes":["int","int","int"] }, 
