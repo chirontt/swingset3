@@ -46,12 +46,15 @@ import java.awt.event.HierarchyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -140,6 +143,20 @@ public class SwingSet3 extends SingleFrameApplication  {
     }
     
     public static void main(String[] args) {
+        //temp fix for GraalVM's native image for Windows:
+        //AWT/Swing in Windows requires the "java.home" property be set
+        String javaHome = System.getProperty("java.home");
+        if (javaHome == null) {
+            //set the "java.home" system property to the directory
+            //where the native image resides (along with other .dll files)
+            try {
+                URI executablePath = SwingSet3.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+                System.setProperty("java.home", (new File(executablePath)).getParent());
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+
         launch(SwingSet3.class, args);
     }
     

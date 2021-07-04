@@ -119,7 +119,9 @@ run {
 //copy the font config files from the JDK
 task copyFontConfigFiles(type: Copy) {
     def jdkHome = System.getProperty('java.home')
-    from "$jdkHome/lib/fontconfig.bfc", "$jdkHome/lib/fontconfig.properties.src"
+    from ("$jdkHome/lib") {
+        include 'fontconfig.bfc', 'fontconfig.properties.src'
+    }
     into "$buildDir/$nativeImageDirName/lib"
 }
 
