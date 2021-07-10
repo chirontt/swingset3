@@ -41,6 +41,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
+import com.github.chirontt.graalvm.text.html.ResourceHTMLEditorPane;
 import com.sun.swingset3.DemoProperties;
 
 /**
@@ -116,7 +117,13 @@ public class EditorPaneDemo extends JPanel {
             }
 
             if (url != null) {
-                html = new JEditorPane(url);
+                if ("resource".equals(url.getProtocol())) {
+                    //the HTML source is from classpath in GraalVM's native image;
+                    //need custom JEditorPane class to load it correctly
+                    html = new ResourceHTMLEditorPane(url);
+                } else {
+                    html = new JEditorPane(url);
+                }
                 html.setEditable(false);
                 html.addHyperlinkListener(createHyperLinkListener());
 
