@@ -17,10 +17,10 @@ import javax.swing.text.html.HTMLDocument;
  */
 public class ResourceHTMLEditorPane extends JEditorPane {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public ResourceHTMLEditorPane() {
-	    super();
+    public ResourceHTMLEditorPane() {
+        super();
         setEditorKit(new ResourceHTMLEditorKit());
     }
 

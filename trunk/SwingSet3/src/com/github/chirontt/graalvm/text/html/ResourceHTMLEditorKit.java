@@ -41,7 +41,7 @@ public class ResourceHTMLEditorKit extends HTMLEditorKit {
             if (o instanceof HTML.Tag) {
                 HTML.Tag kind = (HTML.Tag) o;
                 if (kind == HTML.Tag.IMG) {
-                	return new ResourceImageView(elem);
+                    return new ResourceImageView(elem);
                 }
             }
             return super.create(elem);
