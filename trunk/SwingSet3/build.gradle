@@ -107,13 +107,15 @@ run {
     //and pass them on to the running application's JVM
     systemProperties = System.getProperties()
 
-    //use the following jvmArgs for as many different run scenarios as possible,
-    //and for all the code-execution paths as much as possible,
-    //to generate (or merge with) the GraalVM native-image configuration files
-    //in the graal-cfg/$currentPlatform/META-INF/native-image directory.
-    //This directory is read by GraalVM during the native-image build.
-
-    //jvmArgs = ["-agentlib:native-image-agent=config-merge-dir=graal-cfg/$currentPlatform/META-INF/native-image"]
+    jvmArgs = [
+        //use the following Java agent for as many different run scenarios as possible,
+        //and for all the code-execution paths as much as possible,
+        //to generate (or merge with) the GraalVM native-image configuration files
+        //in the graal-cfg/$currentPlatform/META-INF/native-image directory.
+        //This directory is read by GraalVM during the native-image build.
+        //"-agentlib:native-image-agent=config-merge-dir=graal-cfg/$currentPlatform/META-INF/native-image",
+        '-splash:src/com/sun/swingset3/resources/images/splash.png',
+    ]
 }
 
 //copy the font config files from the JDK
@@ -123,6 +125,13 @@ task copyFontConfigFiles(type: Copy) {
         include 'fontconfig.bfc', 'fontconfig.properties.src'
     }
     into "$buildDir/$nativeImageDirName/lib"
+}
+
+//mark the native executable as Windows GUI program
+task markWindowsGui(type: Exec) {
+    //path to the installation of Microsoft Visual Studio 2019 Community Edition, 64-bit
+    def msvcPath = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\bin\\HostX64\\x64'
+    commandLine "$msvcPath\\editbin.exe", '/subsystem:windows', file("$buildDir/$nativeImageDirName/${project.name}.exe").path
 }
 
 nativeImage {
@@ -140,7 +149,6 @@ nativeImage {
             add '-Djava.awt.headless=false'
         }
         add '--no-fallback'
-        add '--enable-all-security-services'
         add '--enable-url-protocols=http,https'
         add '--report-unsupported-elements-at-runtime'
         add '--allow-incomplete-classpath'
@@ -150,7 +158,7 @@ nativeImage {
     }
 
     if (currentPlatform == 'windows') {
-        finalizedBy copyFontConfigFiles
+        finalizedBy copyFontConfigFiles, markWindowsGui
     }
 }
 

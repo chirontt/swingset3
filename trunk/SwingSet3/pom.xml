@@ -14,13 +14,15 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <native.maven.plugin.version>0.9.1</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.2</native.maven.plugin.version>
         <main.class>com.sun.swingset3.SwingSet3</main.class>
         <!-- system properties for the application when run by exec:exec command;
              can be specified on the command line with -Dsys.props="..."
         -->
         <sys.props></sys.props>
         <nativeImageDirName>native-image-${current.platform}</nativeImageDirName>
+        <!-- path to the installation of Microsoft Visual Studio 2019 Community Edition, 64-bit -->
+        <msvc.path>C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\bin\\HostX64\\x64</msvc.path>
     </properties>
 
     <dependencies>
@@ -89,6 +91,7 @@
                         <!-- GraalVM's agent to generate (or merge with) native-image configuration files -->
                         <!-- argument>-agentlib:native-image-agent=config-merge-dir=graal-cfg/${current.platform}/META-INF/native-image</argument -->
                         <argument>${sys.props}</argument>
+                        <argument>-splash:src/com/sun/swingset3/resources/images/splash.png</argument>
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>${main.class}</argument>
@@ -202,16 +205,16 @@
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
                             <buildArgs>
-                                -Djava.awt.headless=false
-                                --no-fallback
-                                --enable-http
-                                --enable-https
-                                --report-unsupported-elements-at-runtime
-                                --allow-incomplete-classpath
-                                --native-image-info
-                                -H:+TraceNativeToolUsage
-                                -H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}
-                                -H:Path=${project.build.directory}/${nativeImageDirName}
+                                <buildArg>-Djava.awt.headless=false</buildArg>
+                                <buildArg>--no-fallback</buildArg>
+                                <buildArg>--enable-http</buildArg>
+                                <buildArg>--enable-https</buildArg>
+                                <buildArg>--report-unsupported-elements-at-runtime</buildArg>
+                                <buildArg>--allow-incomplete-classpath</buildArg>
+                                <buildArg>--native-image-info</buildArg>
+                                <buildArg>-H:+TraceNativeToolUsage</buildArg>
+                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}</buildArg>
+                                <buildArg>-H:Path=${project.build.directory}/${nativeImageDirName}</buildArg>
                             </buildArgs>
                             <skip>false</skip>
                         </configuration>
@@ -248,15 +251,15 @@
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
                             <buildArgs>
-                                --no-fallback
-                                --enable-http
-                                --enable-https
-                                --report-unsupported-elements-at-runtime
-                                --allow-incomplete-classpath
-                                --native-image-info
-                                -H:+TraceNativeToolUsage
-                                -H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}
-                                -H:Path=${project.build.directory}/${nativeImageDirName}
+                                <buildArg>--no-fallback</buildArg>
+                                <buildArg>--enable-http</buildArg>
+                                <buildArg>--enable-https</buildArg>
+                                <buildArg>--report-unsupported-elements-at-runtime</buildArg>
+                                <buildArg>--allow-incomplete-classpath</buildArg>
+                                <buildArg>--native-image-info</buildArg>
+                                <buildArg>-H:+TraceNativeToolUsage</buildArg>
+                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}</buildArg>
+                                <buildArg>-H:Path=${project.build.directory}/${nativeImageDirName}</buildArg>
                             </buildArgs>
                             <skip>false</skip>
                         </configuration>
@@ -287,6 +290,32 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <!-- mark the native executable as Windows GUI program -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>mark-windows-gui</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>${msvc.path}\\editbin.exe</executable>
+                            <arguments>
+                                <argument>/subsystem:windows</argument>
+                                <argument>${project.build.directory}/${nativeImageDirName}/${project.name}.exe</argument>
+                            </arguments>
+                            <!-- ignore the return error code 1342 -->
+                            <successCodes>
+                                <successCode>1342</successCode>
+                            </successCodes>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
