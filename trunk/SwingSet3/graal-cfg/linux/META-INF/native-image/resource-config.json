@@ -1,9 +1,11 @@
 {
   "resources":{
   "includes":[
+    {"pattern":"\\QMETA-INF/MANIFEST.MF\\E"}, 
     {"pattern":"\\QMETA-INF/demolist\\E"}, 
     {"pattern":"\\QMETA-INF/services/javax.swing.LookAndFeel\\E"}, 
     {"pattern":"\\QMETA-INF/services/org.jdesktop.swingx.plaf.LookAndFeelAddons\\E"}, 
+    {"pattern":"\\Qcom/github/chirontt/graalvm/swingset3/NativeSwingSet3.class\\E"}, 
     {"pattern":"\\Qcom/sun/java/swing/plaf/motif/icons/DesktopIcon.gif\\E"}, 
     {"pattern":"\\Qcom/sun/java/swing/plaf/motif/icons/Error.gif\\E"}, 
     {"pattern":"\\Qcom/sun/java/swing/plaf/motif/icons/Inform.gif\\E"}, 

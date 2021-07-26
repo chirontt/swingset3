@@ -13,7 +13,8 @@ description = 'SwingSet3 sample application'
 version = '0.0.1-SNAPSHOT'
 
 ext {
-    mainClassName = 'com.sun.swingset3.SwingSet3'
+    mainClassName = 'com.github.chirontt.graalvm.swingset3.NativeSwingSet3'
+    splashImage = 'com/sun/swingset3/resources/images/splash.png'
     currentPlatform = getCurrentPlatform()
     nativeImageDirName = "native-image-$currentPlatform"
 }
@@ -67,9 +68,11 @@ jar {
 
     manifest {
         attributes(
+            'Main-Class': project.mainClassName,
             'Built-By': System.getProperty('user.name'),
             'Created-By': System.getProperty('java.runtime.version') + ' (' + System.getProperty('java.vendor') + ')',
             'Gradle-Version': 'Gradle ' + gradle.getGradleVersion(),
+            'SplashScreen-Image': project.splashImage,
         )
     }
 }
@@ -85,7 +88,7 @@ task uberJar(type: Jar) {
             'Built-By': System.getProperty('user.name'),
             'Created-By': System.getProperty('java.runtime.version') + ' (' + System.getProperty('java.vendor') + ')',
             'Gradle-Version': 'Gradle ' + gradle.getGradleVersion(),
-            'SplashScreen-Image': 'com/sun/swingset3/resources/images/splash.png',
+            'SplashScreen-Image': project.splashImage,
         )
     }
     from {
@@ -114,7 +117,7 @@ run {
         //in the graal-cfg/$currentPlatform/META-INF/native-image directory.
         //This directory is read by GraalVM during the native-image build.
         //"-agentlib:native-image-agent=config-merge-dir=graal-cfg/$currentPlatform/META-INF/native-image",
-        '-splash:src/com/sun/swingset3/resources/images/splash.png',
+        "-splash:src/${project.splashImage}",
     ]
 }
 

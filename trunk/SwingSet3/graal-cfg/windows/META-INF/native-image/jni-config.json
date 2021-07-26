@@ -346,7 +346,10 @@
 },
 {
   "name":"java.lang.ClassLoader",
-  "methods":[{"name":"getPlatformClassLoader","parameterTypes":[] }]
+  "methods":[
+    {"name":"getPlatformClassLoader","parameterTypes":[] }, 
+    {"name":"loadClass","parameterTypes":["java.lang.String"] }
+  ]
 },
 {
   "name":"java.lang.Enum",
@@ -383,6 +386,13 @@
 },
 {
   "name":"javax.swing.Popup$HeavyWeightWindow"
+},
+{
+  "name":"jdk.internal.loader.ClassLoaders$PlatformClassLoader"
+},
+{
+  "name":"org.graalvm.nativebridge.jni.JNIExceptionWrapperEntryPoints",
+  "methods":[{"name":"getClassName","parameterTypes":["java.lang.Class"] }]
 },
 {
   "name":"sun.awt.AWTAutoShutdown",
@@ -572,6 +582,7 @@
 },
 {
   "name":"sun.awt.windows.WFramePeer",
+  "fields":[{"name":"keepOnMinimize"}],
   "methods":[{"name":"getExtendedState","parameterTypes":[] }]
 },
 {
