@@ -10,7 +10,7 @@ import com.sun.swingset3.SwingSet3;
 
 public class NativeSwingSet3 {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         //temp fix for GraalVM's native image for Windows:
         //AWT/Swing in Windows requires the "java.home" property be set
         String javaHome = System.getProperty("java.home");
@@ -23,13 +23,9 @@ public class NativeSwingSet3 {
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-        }
 
-        //temp fix for non-support of splash screen image in GraalVM's native image,
-        //by showing the splash image manually
-        if (java.awt.SplashScreen.getSplashScreen() == null) {
-            //System.out.println("WARNING: Splash screen not available. Doh!");
-            //JOptionPane.showMessageDialog(null, "WARNING: Splash screen not available. Doh!");
+            //temp fix for non-support of splash screen image in GraalVM's native image,
+            //by showing the splash image manually
             try {
                 String splashScreenImage =
                         NativeImageUtils.getManifestValue(NativeSwingSet3.class.getName(), "SplashScreen-Image")
@@ -47,10 +43,9 @@ public class NativeSwingSet3 {
                 SwingSet3.main(args);
             }
         } else {
-            //splash screen is working;
-            //launch the SwingSet3 program
+            //launch SwingSet3 in standard JVM
             SwingSet3.main(args);
         }
-	}
+    }
 
 }

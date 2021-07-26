@@ -265,6 +265,9 @@
   ]
 },
 {
+  "name":"jdk.internal.loader.ClassLoaders$PlatformClassLoader"
+},
+{
   "name":"sun.awt.SunHints",
   "fields":[{"name":"INTVAL_STROKE_PURE"}]
 },

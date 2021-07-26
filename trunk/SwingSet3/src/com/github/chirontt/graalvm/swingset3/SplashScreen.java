@@ -76,7 +76,11 @@ public class SplashScreen extends Frame {
     private void initImageAndTracker(){
         fMediaTracker = new MediaTracker(this);
         URL imageURL = getClass().getResource("/" + fImageId);
-        fImage = Toolkit.getDefaultToolkit().getImage(imageURL);
+        if (imageURL == null) {
+            throw new IllegalArgumentException("Failed to find image: " + fImageId);
+        } else {
+            fImage = Toolkit.getDefaultToolkit().getImage(imageURL);
+        }
     }
 
     private final class SplashWindow extends Window {
