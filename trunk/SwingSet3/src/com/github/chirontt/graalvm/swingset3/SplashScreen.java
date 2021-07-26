@@ -95,7 +95,7 @@ public class SplashScreen extends Frame {
             Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
             Rectangle window = getBounds();
             setLocation((screen.width - window.width)/2, (screen.height - window.height)/2);
-            setBackground(Color.BLACK);
+            setBackground(new Color(0, 0, 0, 0));  //transparent background
             setVisible(true);
         }
      

@@ -530,6 +530,10 @@
   ]
 },
 {
+  "name":"sun.awt.windows.TranslucentWindowPainter$VIOptWindowPainter$1",
+  "methods":[{"name":"run","parameterTypes":[] }]
+},
+{
   "name":"sun.awt.windows.WClipboard",
   "methods":[
     {"name":"handleContentsChanged","parameterTypes":[] }, 

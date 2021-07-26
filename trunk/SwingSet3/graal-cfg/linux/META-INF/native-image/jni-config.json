@@ -341,7 +341,8 @@
     {"name":"aData"}, 
     {"name":"bitsPerPixel"}, 
     {"name":"screen"}
-  ]
+  ],
+  "methods":[{"name":"createDCM32","parameterTypes":["int","int","int","int","boolean"] }]
 },
 {
   "name":"sun.awt.X11GraphicsDevice",
