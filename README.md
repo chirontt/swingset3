@@ -2,7 +2,7 @@
 
 SwingSet3 Application, taken from the svn repo at https://java.net/projects/swingset3 and trunk put directly in here.
 
-##----##
+----
 
 SwingSet3 is a demo application which highlights the components and features of the Swing user interface toolkit
 in Java 6+. It showcases the Nimbus look-and-feel, but also allows you to dynamically change the look-and-feel to
