@@ -21,7 +21,7 @@
              can be specified on the command line with -Dsys.props="..."
         -->
         <sys.props></sys.props>
-        <nativeImageDirName>native-image-${current.platform}</nativeImageDirName>
+        <native.image.dir.name>native-image-${current.platform}</native.image.dir.name>
         <!-- path to the installation of Microsoft Visual Studio 2019 Community Edition, 64-bit -->
         <msvc.path>C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\bin\\HostX64\\x64</msvc.path>
     </properties>
@@ -212,7 +212,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <!-- outputDir>${project.build.directory}/${nativeImageDirName}</outputDir -->
+                            <!-- outputDir>${project.build.directory}/${native.image.dir.name}</outputDir -->
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
                             <buildArgs>
@@ -223,9 +223,10 @@
                                 <buildArg>--report-unsupported-elements-at-runtime</buildArg>
                                 <buildArg>--allow-incomplete-classpath</buildArg>
                                 <buildArg>--native-image-info</buildArg>
-                                <buildArg>-H:+TraceNativeToolUsage</buildArg>
-                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}</buildArg>
-                                <buildArg>-H:Path=${project.build.directory}/${nativeImageDirName}</buildArg>
+                                <buildArg>--verbose</buildArg>
+                                <!-- buildArg>-H:+TraceNativeToolUsage</buildArg -->
+                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
+                                <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
                             </buildArgs>
                             <skip>false</skip>
                         </configuration>
@@ -258,7 +259,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <!-- outputDir>${project.build.directory}/${nativeImageDirName}</outputDir -->
+                            <!-- outputDir>${project.build.directory}/${native.image.dir.name}</outputDir -->
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
                             <buildArgs>
@@ -268,9 +269,10 @@
                                 <buildArg>--report-unsupported-elements-at-runtime</buildArg>
                                 <buildArg>--allow-incomplete-classpath</buildArg>
                                 <buildArg>--native-image-info</buildArg>
-                                <buildArg>-H:+TraceNativeToolUsage</buildArg>
-                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${nativeImageDirName}</buildArg>
-                                <buildArg>-H:Path=${project.build.directory}/${nativeImageDirName}</buildArg>
+                                <buildArg>--verbose</buildArg>
+                                <!-- buildArg>-H:+TraceNativeToolUsage</buildArg -->
+                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
+                                <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
                             </buildArgs>
                             <skip>false</skip>
                         </configuration>
@@ -288,7 +290,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/${nativeImageDirName}/lib</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/${native.image.dir.name}/lib</outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${java.home}/lib</directory>
@@ -320,12 +322,40 @@
                             <executable>${msvc.path}\\editbin.exe</executable>
                             <arguments>
                                 <argument>/subsystem:windows</argument>
-                                <argument>${project.build.directory}/${nativeImageDirName}/${project.name}.exe</argument>
+                                <argument>${project.build.directory}/${native.image.dir.name}/${project.name}.exe</argument>
                             </arguments>
                             <!-- ignore the return error code 1342 -->
                             <successCodes>
                                 <successCode>1342</successCode>
                             </successCodes>
+                        </configuration>
+                    </plugin>
+                    <!-- remove unneeded .dll files -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>remove-unneeded-dll-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <target>
+                                <move todir="${project.build.directory}/tmp/${native.image.dir.name}">
+                                    <fileset dir="${project.build.directory}/${native.image.dir.name}">
+                                        <include name="*.dll"/>
+                                        <include name="*.txt"/>
+                                        <!-- keep the shim DLLs -->
+                                        <exclude name="java.dll"/>
+                                        <exclude name="jvm.dll"/>
+                                    </fileset>
+                                </move>
+                            </target>
                         </configuration>
                     </plugin>
                 </plugins>

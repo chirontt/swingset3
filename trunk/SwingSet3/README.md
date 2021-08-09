@@ -134,9 +134,9 @@ from standard library paths required by the executable at runtime:
 	    libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x00007fd5d26f1000)
 	    libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x00007fd5d26d7000)
 
-On Windows 10 platform, the resultant native image consists of multiple files: the executable `SwingSet3.exe`,
-plus a set of `.dll` files, and some `font` config files from the JDK are also included.
-Here are their structure after a Gradle (or Maven) native-image build:
+On Windows 10 platform, the resultant native image consists of multiple files: the executable
+`SwingSet3.exe`, plus a set of `.dll` files, and some `font` config files from the JDK are also
+included. Here are their structure after a Gradle (or Maven) native-image build:
 
 	build\ (or target\)
 	    native-image-windows\
@@ -157,7 +157,20 @@ Here are their structure after a Gradle (or Maven) native-image build:
 	        sunmscapi.dll
 	        SwingSet3.exe
 
+Many .dll files in the above *native-image-windows* folder are not needed at runtime
+(at least not by the `SwingSet3` application) so they can be removed, resulting in the
+final build folder structure for Windows:
+
+	build\ (or target\)
+	    native-image-windows\
+	        lib\
+	            fontconfig.bfc
+	            fontconfig.properties.src
+	        java.dll
+	        jvm.dll
+	        SwingSet3.exe
+
 All files in the *native-image-windows* folder (including the *lib* sub-folder) must stay together
-in the same structure, with names unchanged after the build, so that the `SwingSet3.exe` native executable
-can be run successfully in Windows.
+in the same structure, with names unchanged after the build, so that the `SwingSet3.exe` native
+executable can be run successfully in Windows.
 
