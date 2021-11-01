@@ -1,6 +1,6 @@
 plugins {
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.9.5'
+    id 'org.graalvm.buildtools.native' version '0.9.6'
 }
 
 wrapper {
@@ -133,11 +133,15 @@ task removeUnneededDllFiles {
                 include name: '*.dll'
                 include name: '*.pdb'
                 include name: '*.txt'
-                //keep the shim DLLs
+                //keep the shim DLLs and some
+                exclude name: 'awt.dll'
+                exclude name: 'fontmanager.dll'
                 exclude name: 'java.dll'
                 exclude name: 'jvm.dll'
             }
         }
+        ant.move(file: "$buildDir/$nativeImageDirName/reports",
+                 tofile: "$buildDir/tmp/$nativeImageDirName/reports")
         ant.move(file: "$buildDir/$nativeImageDirName/sources",
                  tofile: "$buildDir/tmp/$nativeImageDirName/sources")
     }
@@ -184,7 +188,8 @@ tasks.named("nativeCompile") {
     //dependsOn uberJar
     //classpathJar = uberJar.archiveFile
     if (currentPlatform == 'windows') {
-        finalizedBy copyFontConfigFiles, markWindowsGui, removeUnneededDllFiles
+        finalizedBy copyFontConfigFiles, markWindowsGui
     }
+    finalizedBy removeUnneededDllFiles
 }
 

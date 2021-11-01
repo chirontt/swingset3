@@ -14,7 +14,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <native.maven.plugin.version>0.9.5</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.6</native.maven.plugin.version>
         <main.class>com.github.chirontt.graalvm.swingset3.NativeSwingSet3</main.class>
         <splash.image>com/sun/swingset3/resources/images/splash.png</splash.image>
         <!-- system properties for the application when run by exec:exec command;
@@ -330,7 +330,7 @@
                             </successCodes>
                         </configuration>
                     </plugin>
-                    <!-- remove unneeded .dll files -->
+                    <!-- remove unneeded .dll/.txt files -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
@@ -350,11 +350,15 @@
                                     <fileset dir="${project.build.directory}/${native.image.dir.name}">
                                         <include name="*.dll"/>
                                         <include name="*.txt"/>
-                                        <!-- keep the shim DLLs -->
+                                        <!-- keep the shim DLLs and some -->
+                                        <exclude name="awt.dll"/>
+                                        <exclude name="fontmanager.dll"/>
                                         <exclude name="java.dll"/>
                                         <exclude name="jvm.dll"/>
                                     </fileset>
                                 </move>
+                                <move file="${project.build.directory}/${native.image.dir.name}/reports"
+                                      tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"/>
                             </target>
                         </configuration>
                     </plugin>

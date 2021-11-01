@@ -146,7 +146,6 @@ included. Here are their structure after a Gradle (or Maven) native-image build:
 	        awt.dll
 	        fontmanager.dll
 	        freetype.dll
-	        harfbuzz.dll
 	        java.dll
 	        javaaccessbridge.dll
 	        javajpeg.dll
@@ -166,6 +165,8 @@ final build folder structure for Windows:
 	        lib\
 	            fontconfig.bfc
 	            fontconfig.properties.src
+	        awt.dll
+	        fontmanager.dll
 	        java.dll
 	        jvm.dll
 	        SwingSet3.exe
