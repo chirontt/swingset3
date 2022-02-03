@@ -1,16 +1,16 @@
 plugins {
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.9.6'
+    id 'org.graalvm.buildtools.native' version '0.9.9'
 }
 
-wrapper {
-    gradleVersion = '7.2'
+tasks.wrapper {
+    gradleVersion = '7.3.3'
     distributionType = Wrapper.DistributionType.ALL
 }
 
 group = 'com.sun.swingset3'
 description = 'SwingSet3 sample application'
-version = '0.0.1-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 
 ext {
     mainClassName = 'com.github.chirontt.graalvm.swingset3.NativeSwingSet3'
@@ -120,9 +120,7 @@ task copyFontConfigFiles(type: Copy) {
 
 //mark the native executable as Windows GUI program
 task markWindowsGui(type: Exec) {
-    //path to the installation of Microsoft Visual Studio 2019 Community Edition, 64-bit
-    def msvcPath = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\bin\\HostX64\\x64'
-    commandLine "$msvcPath\\editbin.exe", '/subsystem:windows', file("$buildDir/$nativeImageDirName/${project.name}.exe").path
+    commandLine 'editbin.exe', '/subsystem:windows', file("$buildDir/$nativeImageDirName/${project.name}.exe").path
 }
 
 //remove unneeded .dll/.txt/.pdb files
@@ -140,10 +138,14 @@ task removeUnneededDllFiles {
                 exclude name: 'jvm.dll'
             }
         }
-        ant.move(file: "$buildDir/$nativeImageDirName/reports",
-                 tofile: "$buildDir/tmp/$nativeImageDirName/reports")
-        ant.move(file: "$buildDir/$nativeImageDirName/sources",
-                 tofile: "$buildDir/tmp/$nativeImageDirName/sources")
+        if (file("$buildDir/$nativeImageDirName/reports").exists()) {
+            ant.move(file: "$buildDir/$nativeImageDirName/reports",
+                     tofile: "$buildDir/tmp/$nativeImageDirName/reports")
+        }
+        if (file("$buildDir/$nativeImageDirName/sources").exists()) {
+            ant.move(file: "$buildDir/$nativeImageDirName/sources",
+                     tofile: "$buildDir/tmp/$nativeImageDirName/sources")
+        }
     }
 }
 
@@ -176,7 +178,31 @@ graalvmNative {
             buildArgs.add('--native-image-info')
             buildArgs.add("-H:Path=$buildDir/$nativeImageDirName")
             buildArgs.add("-H:TempDirectory=$buildDir/tmp/$nativeImageDirName")
-            //buildArgs.add('-H:+TraceNativeToolUsage')
+            buildArgs.add('-H:+TraceNativeToolUsage')
+
+            if (currentPlatform == 'windows') {
+                //temp fix for the link errors since GraalVM 21.3.0 for JDK17 version in Windows
+                //(see https://github.com/oracle/graal/issues/4072#issuecomment-1025211870)
+                buildArgs.add('-H:NativeLinkerOption=/export:JDK_LoadSystemLibrary')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_CallMethodByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_CallMethodByNameV')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_CallStaticMethodByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ClassString')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_GetEnv')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_GetFieldByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_GetStaticFieldByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_IsInstanceOfByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_NewObjectByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_NewStringPlatform')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_SetFieldByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ThrowArrayIndexOutOfBoundsException')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ThrowByName')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ThrowIOException')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ThrowIllegalArgumentException')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ThrowInternalError')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ThrowNullPointerException')
+                buildArgs.add('-H:NativeLinkerOption=/export:JNU_ThrowOutOfMemoryError')
+            }
 
             useFatJar = false
         }

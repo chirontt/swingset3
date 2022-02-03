@@ -847,82 +847,107 @@
   ]},
   "bundles":[
     {
-      "name":"com.sun.java.swing.plaf.gtk.resources.gtk"
+      "name":"com.sun.java.swing.plaf.gtk.resources.gtk",
+      "classNames":["com.sun.java.swing.plaf.gtk.resources.gtk"]
     }, 
     {
-      "name":"com.sun.java.swing.plaf.motif.resources.motif"
+      "name":"com.sun.java.swing.plaf.motif.resources.motif",
+      "classNames":["com.sun.java.swing.plaf.motif.resources.motif"]
     }, 
     {
-      "name":"com.sun.swing.internal.plaf.basic.resources.basic"
+      "name":"com.sun.swing.internal.plaf.basic.resources.basic",
+      "classNames":["com.sun.swing.internal.plaf.basic.resources.basic"]
     }, 
     {
-      "name":"com.sun.swing.internal.plaf.metal.resources.metal"
+      "name":"com.sun.swing.internal.plaf.metal.resources.metal",
+      "classNames":["com.sun.swing.internal.plaf.metal.resources.metal"]
     }, 
     {
-      "name":"com.sun.swing.internal.plaf.synth.resources.synth"
+      "name":"com.sun.swing.internal.plaf.synth.resources.synth",
+      "classNames":["com.sun.swing.internal.plaf.synth.resources.synth"]
     }, 
     {
-      "name":"com.sun.swingset3.codeview.resources.CodeViewer"
+      "name":"com.sun.swingset3.codeview.resources.CodeViewer",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.colorchooser.resources.ColorChooserDemo"
+      "name":"com.sun.swingset3.demos.colorchooser.resources.ColorChooserDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.combobox.resources.ComboBoxDemo"
+      "name":"com.sun.swingset3.demos.combobox.resources.ComboBoxDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.gridbaglayout.resources.GridBagLayoutDemo"
+      "name":"com.sun.swingset3.demos.gridbaglayout.resources.GridBagLayoutDemo",
+      "locales":[""]
     }, 
     {
       "name":"com.sun.swingset3.demos.internalframe.resources.InternalFrameDemo"
     }, 
     {
-      "name":"com.sun.swingset3.demos.list.resources.ListDemo"
+      "name":"com.sun.swingset3.demos.list.resources.ListDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.optionpane.resources.OptionPaneDemo"
+      "name":"com.sun.swingset3.demos.optionpane.resources.OptionPaneDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.progressbar.resources.ProgressBarDemo"
+      "name":"com.sun.swingset3.demos.progressbar.resources.ProgressBarDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.scrollpane.resources.ScrollPaneDemo"
+      "name":"com.sun.swingset3.demos.scrollpane.resources.ScrollPaneDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.slider.resources.SliderDemo"
+      "name":"com.sun.swingset3.demos.slider.resources.SliderDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.spinner.resources.SpinnerDemo"
+      "name":"com.sun.swingset3.demos.spinner.resources.SpinnerDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.splitpane.resources.SplitPaneDemo"
+      "name":"com.sun.swingset3.demos.splitpane.resources.SplitPaneDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.tabbedpane.resources.TabbedPaneDemo"
+      "name":"com.sun.swingset3.demos.tabbedpane.resources.TabbedPaneDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.table.resources.TableDemo"
+      "name":"com.sun.swingset3.demos.table.resources.TableDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.textfield.resources.TextFieldDemo"
+      "name":"com.sun.swingset3.demos.textfield.resources.TextFieldDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.togglebutton.resources.ToggleButtonDemo"
+      "name":"com.sun.swingset3.demos.togglebutton.resources.ToggleButtonDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.tooltip.resources.ToolTipDemo"
+      "name":"com.sun.swingset3.demos.tooltip.resources.ToolTipDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.demos.tree.resources.TreeDemo"
+      "name":"com.sun.swingset3.demos.tree.resources.TreeDemo",
+      "locales":[""]
     }, 
     {
-      "name":"com.sun.swingset3.resources.SwingSet3"
+      "name":"com.sun.swingset3.resources.SwingSet3",
+      "locales":[""]
     }, 
     {
-      "name":"org.jdesktop.application.resources.Application"
+      "name":"org.jdesktop.application.resources.Application",
+      "locales":[""]
     }, 
     {
-      "name":"sun.awt.resources.awt"
+      "name":"sun.awt.resources.awt",
+      "classNames":["sun.awt.resources.awt"]
     }
   ]
 }

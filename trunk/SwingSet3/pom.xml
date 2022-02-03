@@ -4,7 +4,7 @@
 
     <groupId>com.sun.swingset3</groupId>
     <artifactId>swingset3</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>SwingSet3</name> <!-- name of the resulting native executable -->
@@ -14,7 +14,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <native.maven.plugin.version>0.9.6</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.9</native.maven.plugin.version>
         <main.class>com.github.chirontt.graalvm.swingset3.NativeSwingSet3</main.class>
         <splash.image>com/sun/swingset3/resources/images/splash.png</splash.image>
         <!-- system properties for the application when run by exec:exec command;
@@ -22,8 +22,6 @@
         -->
         <sys.props></sys.props>
         <native.image.dir.name>native-image-${current.platform}</native.image.dir.name>
-        <!-- path to the installation of Microsoft Visual Studio 2019 Community Edition, 64-bit -->
-        <msvc.path>C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.28.29333\\bin\\HostX64\\x64</msvc.path>
     </properties>
 
     <dependencies>
@@ -224,11 +222,38 @@
                                 <buildArg>--allow-incomplete-classpath</buildArg>
                                 <buildArg>--native-image-info</buildArg>
                                 <buildArg>--verbose</buildArg>
-                                <!-- buildArg>-H:+TraceNativeToolUsage</buildArg -->
+                                <buildArg>-H:+TraceNativeToolUsage</buildArg>
                                 <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
                                 <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
                             </buildArgs>
                             <skip>false</skip>
+                        </configuration>
+                    </plugin>
+                    <!-- remove unneeded files -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>remove-unneeded-dll-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <target>
+                                <move todir="${project.build.directory}/tmp/${native.image.dir.name}">
+                                    <fileset dir="${project.build.directory}/${native.image.dir.name}">
+                                        <include name="*.txt"/>
+                                    </fileset>
+                                </move>
+                                <move file="${project.build.directory}/${native.image.dir.name}/reports"
+                                      tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"
+                                      failonerror="false" quiet="true"/>
+                            </target>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -270,9 +295,30 @@
                                 <buildArg>--allow-incomplete-classpath</buildArg>
                                 <buildArg>--native-image-info</buildArg>
                                 <buildArg>--verbose</buildArg>
-                                <!-- buildArg>-H:+TraceNativeToolUsage</buildArg -->
+                                <buildArg>-H:+TraceNativeToolUsage</buildArg>
                                 <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
                                 <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
+                                <!-- temp fix for the link errors since GraalVM 21.3.0 for JDK17 version in Windows
+                                     (see https://github.com/oracle/graal/issues/4072#issuecomment-1025211870) -->
+                                <buildArg>-H:NativeLinkerOption=/export:JDK_LoadSystemLibrary</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_CallMethodByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_CallMethodByNameV</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_CallStaticMethodByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ClassString</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_GetEnv</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_GetFieldByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_GetStaticFieldByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_IsInstanceOfByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_NewObjectByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_NewStringPlatform</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_SetFieldByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowArrayIndexOutOfBoundsException</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowByName</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowIOException</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowIllegalArgumentException</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowInternalError</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowNullPointerException</buildArg>
+                                <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowOutOfMemoryError</buildArg>
                             </buildArgs>
                             <skip>false</skip>
                         </configuration>
@@ -319,7 +365,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <executable>${msvc.path}\\editbin.exe</executable>
+                            <executable>editbin.exe</executable>
                             <arguments>
                                 <argument>/subsystem:windows</argument>
                                 <argument>${project.build.directory}/${native.image.dir.name}/${project.name}.exe</argument>
@@ -358,7 +404,8 @@
                                     </fileset>
                                 </move>
                                 <move file="${project.build.directory}/${native.image.dir.name}/reports"
-                                      tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"/>
+                                      tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"
+                                      failonerror="false" quiet="true"/>
                             </target>
                         </configuration>
                     </plugin>

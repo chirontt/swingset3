@@ -28,13 +28,13 @@ To produce an executable uber jar, execute the `uberJar` task:
 
 and the uber jar can then be run with the `java -jar` command:
 
-	java -jar build/libs/SwingSet3-0.0.1-SNAPSHOT-no-deps-with-sources.jar
+	java -jar build/libs/SwingSet3-1.0-SNAPSHOT-no-deps-with-sources.jar
 
-To produce a native executable, execute the `nativeImage` task:
+To produce a native executable, execute the `nativeCompile` task:
 
-	gradlew nativeImage
+	gradlew nativeCompile
 
-The `nativeImage` task would take a while to compile the application and link into an executable file.
+The `nativeCompile` task would take a while to compile the application and link into an executable file.
 The resulting `SwingSet3` executable file is:
 
 	build/native-image-linux/SwingSet3
@@ -96,22 +96,13 @@ which can then be run directly:
 The above `package` task also produces an executable uber jar.
 The uber jar can then be run with the `java -jar` command:
 
-	java -jar target/swingset3-0.0.1-SNAPSHOT-no-deps-with-sources.jar
-
-## Compressed executable
-
-The resulting `SwingSet3` native executable, whether produced by Gradle or Maven build script,
-can be further reduced in size via compression, using the [UPX](https://upx.github.io) utility,
-as described [here](https://medium.com/graalvm/compressed-graalvm-native-images-4d233766a214).
-
-As an example, the resulting `SwingSet3.exe` native application file produced in Windows is
-normally 71MB in size, but is compressed to 21MB with the UPX command: `upx --best SwingSet3.exe`
+	java -jar target/swingset3-1.0-SNAPSHOT-no-deps-with-sources.jar
 
 ## Caveats on Native Image
 
 On Linux platform, such as Ubuntu, the resultant native executable is a single file, `SwingSet3`,
-of about 83MB in size. Running the `ldd` command on it will show all the dynamic libraries (`.so`)
-from standard library paths required by the executable at runtime:
+of about 75MB in size (by GraalVM 22.0.0.2 version). Running the `ldd` command on it will show
+all the dynamic libraries (`.so`) from standard library paths required by the executable at runtime:
 
 	$ ldd build/native-image-linux/SwingSet3
 	    linux-vdso.so.1 (0x00007ffd23575000)
