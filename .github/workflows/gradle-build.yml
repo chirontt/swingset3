@@ -20,14 +20,6 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
 
-      - name: Do the build in the SwingSet3 sub-directory
-        run: |
-          cd trunk
-          cd SwingSet3
-
-      - name: Verify Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
-
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
@@ -48,10 +40,14 @@ jobs:
           javac -version
 
       - name: Build with Gradle Wrapper (Linux)
-        run: ./gradlew --no-daemon --info nativeCompile
+        run: |
+          cd trunk/SwingSet3
+          ./gradlew --no-daemon --info nativeCompile
         if: runner.os != 'Windows'
 
       - name: Build with Gradle Wrapper (Windows)
-        run: .\gradlew.bat --no-daemon --info nativeCompile
+        run: |
+          cd trunk\SwingSet3
+          .\gradlew.bat --no-daemon --info nativeCompile
         if: runner.os == 'Windows'
 
