@@ -32,6 +32,11 @@ jobs:
           java -version
           javac -version
 
+      - name: Do the build in the SwingSet3 sub-directory
+        run: |
+          cd trunk
+          cd SwingSet3
+
       - name: Build with Maven Wrapper (Linux)
         run: ./mvnw -B package -Pnative-linux
         if: runner.os == 'Linux'
