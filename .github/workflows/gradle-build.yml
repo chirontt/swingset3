@@ -39,6 +39,10 @@ jobs:
           java -version
           javac -version
 
+      - name: Install libxi-dev in Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libxi-dev
+
       - name: Build with Gradle Wrapper (Linux)
         run: |
           cd trunk/SwingSet3

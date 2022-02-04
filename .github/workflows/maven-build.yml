@@ -32,10 +32,9 @@ jobs:
           java -version
           javac -version
 
-      - name: Do the build in the SwingSet3 sub-directory
-        run: |
-          cd trunk
-          cd SwingSet3
+      - name: Install libxi-dev in Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libxi-dev
 
       - name: Build with Maven Wrapper (Linux)
         run: |
@@ -54,12 +53,12 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: SwingSet3 ${{ runner.os }} native image with SubstrateVM for Java ${{ matrix.java-version }}
-          path: target/native-image-linux/SwingSet3**
+          path: trunk/SwingSet3/target/native-image-linux/SwingSet3**
 
       - name: Package Windows artifacts
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v2
         with:
           name: SwingSet3 ${{ runner.os }} native image with SubstrateVM for Java ${{ matrix.java-version }}
-          path: target/native-image-windows/
+          path: trunk/SwingSet3/target/native-image-windows/
 
