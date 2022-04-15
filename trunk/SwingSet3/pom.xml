@@ -11,10 +11,9 @@
     <description>SwingSet3 sample application</description>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <native.maven.plugin.version>0.9.9</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.11</native.maven.plugin.version>
         <main.class>com.github.chirontt.graalvm.swingset3.NativeSwingSet3</main.class>
         <splash.image>com/sun/swingset3/resources/images/splash.png</splash.image>
         <!-- system properties for the application when run by exec:exec command;
@@ -22,6 +21,10 @@
         -->
         <sys.props></sys.props>
         <native.image.dir.name>native-image-${current.platform}</native.image.dir.name>
+        <!-- flags to skip plugin execution or not, in each environment -->
+        <skip.in.linux>true</skip.in.linux>
+        <skip.in.macos>true</skip.in.macos>
+        <skip.in.windows>true</skip.in.windows>
     </properties>
 
     <dependencies>
@@ -68,7 +71,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -84,27 +87,15 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
                 <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <!-- GraalVM's agent to generate (or merge with) native-image configuration files -->
-                        <!-- argument>-agentlib:native-image-agent=config-merge-dir=graal-cfg/${current.platform}/META-INF/native-image</argument -->
-                        <argument>${sys.props}</argument>
-                        <argument>-splash:src/${splash.image}</argument>
-                        <argument>-classpath</argument>
-                        <classpath/>
-                        <argument>${main.class}</argument>
-                    </arguments>
+                    <quiet>true</quiet>
+                    <doclint>none</doclint>
+                    <!-- force the generation of frames! -->
+                    <additionalOptions>--frames</additionalOptions>
+                    <failOnError>false</failOnError>
                 </configuration>
             </plugin>
             <!-- create a stand-alone executable uber jar with splash screen
@@ -136,80 +127,30 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <quiet>true</quiet>
-                    <doclint>none</doclint>
-                    <!-- force the generation of frames! -->
-                    <additionalOptions>--frames</additionalOptions>
-                    <failOnError>false</failOnError>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>linux</id>
-            <activation>
-                <os>
-                    <name>linux</name>
-                </os>
-            </activation>
-            <properties>
-                <current.platform>linux</current.platform>
-            </properties>
-        </profile>
-        <profile>
-            <id>macosx</id>
-            <activation>
-                <os>
-                    <name>mac os x</name>
-                </os>
-            </activation>
-            <properties>
-                <current.platform>macos</current.platform>
-            </properties>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <current.platform>windows</current.platform>
-            </properties>
-        </profile>
-        <!-- platform-specific profiles for native image generation -->
-        <profile>
-            <id>native-linux</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <version>${native.maven.plugin.version}</version>
-                        <executions>
-                            <!-- execution>
-                                <id>test-native</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <phase>test</phase>
-                            </execution -->
-                            <execution>
-                                <id>build-native</id>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native.maven.plugin.version}</version>
+                <executions>
+                    <!-- native image test in Linux -->
+                    <!-- execution>
+                        <id>test-native-linux</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>test</phase>
                         <configuration>
+                            <skip>${skip.in.linux}</skip>
+                        </configuration>
+                    </execution -->
+                    <!-- native image build in Linux -->
+                    <execution>
+                        <id>build-native-linux</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <skip>${skip.in.linux}</skip>
                             <!-- outputDir>${project.build.directory}/${native.image.dir.name}</outputDir -->
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
@@ -226,64 +167,28 @@
                                 <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
                                 <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
                             </buildArgs>
-                            <skip>false</skip>
                         </configuration>
-                    </plugin>
-                    <!-- remove unneeded files -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>remove-unneeded-dll-files</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                    </execution>
+                    <!-- native image test in Windows -->
+                    <!-- execution>
+                        <id>test-native-windows</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>test</phase>
                         <configuration>
-                            <target>
-                                <move todir="${project.build.directory}/tmp/${native.image.dir.name}">
-                                    <fileset dir="${project.build.directory}/${native.image.dir.name}">
-                                        <include name="*.txt"/>
-                                    </fileset>
-                                </move>
-                                <move file="${project.build.directory}/${native.image.dir.name}/reports"
-                                      tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"
-                                      failonerror="false" quiet="true"/>
-                            </target>
+                            <skip>${skip.in.windows}</skip>
                         </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>native-windows</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <version>${native.maven.plugin.version}</version>
-                        <executions>
-                            <!-- execution>
-                                <id>test-native</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <phase>test</phase>
-                            </execution -->
-                            <execution>
-                                <id>build-native</id>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
+                    </execution -->
+                    <!-- native image build in Windows -->
+                    <execution>
+                        <id>build-native-windows</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
                         <configuration>
+                            <skip>${skip.in.windows}</skip>
                             <!-- outputDir>${project.build.directory}/${native.image.dir.name}</outputDir -->
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
@@ -320,97 +225,158 @@
                                 <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowNullPointerException</buildArg>
                                 <buildArg>-H:NativeLinkerOption=/export:JNU_ThrowOutOfMemoryError</buildArg>
                             </buildArgs>
-                            <skip>false</skip>
                         </configuration>
-                    </plugin>
-                    <!-- copy the font config files from the JDK -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>copy-font-config-files</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/${native.image.dir.name}/lib</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${java.home}/lib</directory>
-                                            <includes>
-                                                <include>fontconfig.bfc</include>
-                                                <include>fontconfig.properties.src</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- mark the native executable as Windows GUI program -->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>mark-windows-gui</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- copy the font config files from the JDK in Windows -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-font-config-files</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
                         <configuration>
+                            <skip>${skip.in.windows}</skip>
+                            <outputDirectory>${project.build.directory}/${native.image.dir.name}/lib</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${java.home}/lib</directory>
+                                    <includes>
+                                        <include>fontconfig.bfc</include>
+                                        <include>fontconfig.properties.src</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <!-- run the application in a separate standard JVM -->
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <!-- GraalVM's agent to generate (or merge with) native-image configuration files -->
+                                <!-- argument>-agentlib:native-image-agent=config-merge-dir=graal-cfg/${current.platform}/META-INF/native-image</argument -->
+                                <argument>${sys.props}</argument>
+                                <argument>-splash:src/${splash.image}</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>${main.class}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- mark the resultant native executable as Windows GUI program (in Windows) -->
+                    <execution>
+                        <id>mark-windows-gui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip.in.windows}</skip>
                             <executable>editbin.exe</executable>
                             <arguments>
                                 <argument>/subsystem:windows</argument>
                                 <argument>${project.build.directory}/${native.image.dir.name}/${project.name}.exe</argument>
                             </arguments>
-                            <!-- ignore the return error code 1342 -->
+                            <!-- ignore the return error codes: 0, 1342 -->
                             <successCodes>
-                                <successCode>1342</successCode>
+                                <successCode>0</successCode>    <!-- for newer MS VS versions -->
+                                <successCode>1342</successCode> <!-- for older MS VS versions -->
                             </successCodes>
                         </configuration>
-                    </plugin>
-                    <!-- remove unneeded .dll/.txt files -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>remove-unneeded-dll-files</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <target>
-                                <move todir="${project.build.directory}/tmp/${native.image.dir.name}">
-                                    <fileset dir="${project.build.directory}/${native.image.dir.name}">
-                                        <include name="*.dll"/>
-                                        <include name="*.txt"/>
-                                        <!-- keep the shim DLLs and some -->
-                                        <exclude name="awt.dll"/>
-                                        <exclude name="fontmanager.dll"/>
-                                        <exclude name="java.dll"/>
-                                        <exclude name="jvm.dll"/>
-                                    </fileset>
-                                </move>
-                                <move file="${project.build.directory}/${native.image.dir.name}/reports"
-                                      tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"
-                                      failonerror="false" quiet="true"/>
-                            </target>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- remove unneeded .dll/.txt files -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>remove-unneeded-dll-files</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <target>
+                        <move todir="${project.build.directory}/tmp/${native.image.dir.name}"
+                              failonerror="false" quiet="true">
+                            <fileset dir="${project.build.directory}/${native.image.dir.name}">
+                                <include name="*.dll"/>
+                                <include name="*.txt"/>
+                                <!-- keep the shim DLLs and some -->
+                                <exclude name="awt.dll"/>
+                                <exclude name="fontmanager.dll"/>
+                                <exclude name="java.dll"/>
+                                <exclude name="jvm.dll"/>
+                            </fileset>
+                        </move>
+                        <move file="${project.build.directory}/${native.image.dir.name}/reports"
+                              tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"
+                              failonerror="false" quiet="true"/>
+                    </target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <properties>
+                <current.platform>linux</current.platform>
+                <skip.in.linux>false</skip.in.linux>
+            </properties>
+        </profile>
+        <profile>
+            <id>macosx</id>
+            <activation>
+                <os>
+                    <name>mac os x</name>
+                </os>
+            </activation>
+            <properties>
+                <current.platform>macos</current.platform>
+                <skip.in.macos>false</skip.in.macos>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <current.platform>windows</current.platform>
+                <skip.in.windows>false</skip.in.windows>
+            </properties>
         </profile>
     </profiles>
 

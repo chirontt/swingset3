@@ -39,13 +39,13 @@ jobs:
       - name: Build with Maven Wrapper (Linux)
         run: |
           cd trunk/SwingSet3
-          ./mvnw -B package -Pnative-linux
+          ./mvnw -B package
         if: runner.os == 'Linux'
 
       - name: Build with Maven Wrapper (Windows)
         run: |
           cd trunk\SwingSet3
-          .\mvnw.cmd -B package -Pnative-windows
+          .\mvnw.cmd -B package
         if: runner.os == 'Windows'
 
       - name: Package Linux artifact

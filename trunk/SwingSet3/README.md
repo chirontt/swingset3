@@ -63,14 +63,9 @@ To compile and run SwingSet3 in standard JVM with Maven, execute the
 	mvnw compile
 	mvnw exec:exec
 
-To produce a native executable, execute the `package` task for specific platform
-profile (e.g. for Linux):
+To produce a native executable, execute the `package` task:
 
-	mvnw package -Pnative-linux
-
-or if building on a Windows machine:
-
-	mvnw package -Pnative-windows
+	mvnw package
 
 The `package` task would take a while to compile the application and link into an executable file.
 The resulting `SwingSet3` executable file is:

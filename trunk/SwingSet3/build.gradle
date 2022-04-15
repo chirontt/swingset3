@@ -1,10 +1,10 @@
 plugins {
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.9.9'
+    id 'org.graalvm.buildtools.native' version '0.9.11'
 }
 
 tasks.wrapper {
-    gradleVersion = '7.3.3'
+    gradleVersion = '7.4.2'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -126,16 +126,18 @@ task markWindowsGui(type: Exec) {
 //remove unneeded .dll/.txt/.pdb files
 task removeUnneededDllFiles {
     doLast {
-        ant.move(todir: "$buildDir/tmp/$nativeImageDirName") {
-            fileset(dir: "$buildDir/$nativeImageDirName") {
-                include name: '*.dll'
-                include name: '*.pdb'
-                include name: '*.txt'
-                //keep the shim DLLs and some
-                exclude name: 'awt.dll'
-                exclude name: 'fontmanager.dll'
-                exclude name: 'java.dll'
-                exclude name: 'jvm.dll'
+        if (file("$buildDir/$nativeImageDirName").exists()) {
+            ant.move(todir: "$buildDir/tmp/$nativeImageDirName") {
+                fileset(dir: "$buildDir/$nativeImageDirName") {
+                    include name: '*.dll'
+                    include name: '*.pdb'
+                    include name: '*.txt'
+                    //keep the shim DLLs and some
+                    exclude name: 'awt.dll'
+                    exclude name: 'fontmanager.dll'
+                    exclude name: 'java.dll'
+                    exclude name: 'jvm.dll'
+                }
             }
         }
         if (file("$buildDir/$nativeImageDirName/reports").exists()) {
