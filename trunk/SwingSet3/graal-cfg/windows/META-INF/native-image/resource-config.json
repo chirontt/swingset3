@@ -889,7 +889,10 @@
     }, 
     {
       "name":"com.sun.swingset3.demos.gridbaglayout.resources.GridBagLayoutDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.internalframe.resources.InternalFrameDemo",
@@ -921,7 +924,10 @@
     }, 
     {
       "name":"com.sun.swingset3.demos.scrollpane.resources.ScrollPaneDemo",
-      "locales":["und"]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.slider.resources.SliderDemo",
@@ -932,18 +938,28 @@
     }, 
     {
       "name":"com.sun.swingset3.demos.spinner.resources.SpinnerDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.splitpane.resources.SplitPaneDemo",
-      "locales":["und"]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.tabbedpane.resources.TabbedPaneDemo",
-      "locales":["und"]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
-      "name":"com.sun.swingset3.demos.table.resources.TableDemo"
+      "name":"com.sun.swingset3.demos.table.resources.TableDemo",
+      "locales":[""]
     }, 
     {
       "name":"com.sun.swingset3.demos.textfield.resources.TextFieldDemo",
@@ -953,11 +969,15 @@
       ]
     }, 
     {
-      "name":"com.sun.swingset3.demos.togglebutton.resources.ToggleButtonDemo"
+      "name":"com.sun.swingset3.demos.togglebutton.resources.ToggleButtonDemo",
+      "locales":[""]
     }, 
     {
       "name":"com.sun.swingset3.demos.tooltip.resources.ToolTipDemo",
-      "locales":["und"]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.tree.resources.TreeDemo",

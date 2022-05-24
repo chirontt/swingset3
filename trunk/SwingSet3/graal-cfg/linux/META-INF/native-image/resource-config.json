@@ -868,82 +868,140 @@
     }, 
     {
       "name":"com.sun.swingset3.codeview.resources.CodeViewer",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.colorchooser.resources.ColorChooserDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.combobox.resources.ComboBoxDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.gridbaglayout.resources.GridBagLayoutDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
-      "name":"com.sun.swingset3.demos.internalframe.resources.InternalFrameDemo"
+      "name":"com.sun.swingset3.demos.internalframe.resources.InternalFrameDemo",
+      "locales":[""]
     }, 
     {
       "name":"com.sun.swingset3.demos.list.resources.ListDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.optionpane.resources.OptionPaneDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.progressbar.resources.ProgressBarDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.scrollpane.resources.ScrollPaneDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.slider.resources.SliderDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.spinner.resources.SpinnerDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.splitpane.resources.SplitPaneDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.tabbedpane.resources.TabbedPaneDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.table.resources.TableDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.textfield.resources.TextFieldDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.togglebutton.resources.ToggleButtonDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.tooltip.resources.ToolTipDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.demos.tree.resources.TreeDemo",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"com.sun.swingset3.resources.SwingSet3",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"org.jdesktop.application.resources.Application",
-      "locales":[""]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"sun.awt.resources.awt",

@@ -361,8 +361,8 @@
 {
   "name":"sun.awt.X11GraphicsConfig",
   "fields":[
-    {"name":"aData"},
-    {"name":"bitsPerPixel"},
+    {"name":"aData"}, 
+    {"name":"bitsPerPixel"}, 
     {"name":"screen"}
   ],
   "methods":[{"name":"createDCM32","parameterTypes":["int","int","int","int","boolean"] }]
