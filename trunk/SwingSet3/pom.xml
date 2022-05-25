@@ -201,10 +201,10 @@
                                 <buildArg>-H:+TraceNativeToolUsage</buildArg>
                                 <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
                                 <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
-                                <!-- temp fix for the "Unsupported OptionOrigin" error in GraalVM 22.1.0 version in Windows
-                                     (see https://github.com/oracle/graal/issues/4502) -->
-                                <useArgFile>false</useArgFile>
                             </buildArgs>
+                            <!-- temp fix for the "Unsupported OptionOrigin" error in GraalVM 22.1.0 version in Windows
+                                 (see https://github.com/oracle/graal/issues/4502) -->
+                            <useArgFile>false</useArgFile>
                         </configuration>
                     </execution>
                 </executions>
