@@ -34,7 +34,7 @@ public class ResourceImageView extends ImageView {
             URL u = new URL(reference, src);
             if ("resource".equals(u.getProtocol())) {
                 //image comes from classpath resource in GraalVM's native image
-                u = getClass().getResource("/" + u.getPath());
+                u = getClass().getResource(u.getPath());
             }
             return u;
         } catch (MalformedURLException e) {

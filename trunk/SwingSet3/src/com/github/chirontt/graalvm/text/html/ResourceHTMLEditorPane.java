@@ -38,7 +38,7 @@ public class ResourceHTMLEditorPane extends JEditorPane {
     public void setPage(URL page) throws IOException {
         if ("resource".equals(page.getProtocol())) {
             //page comes from classpath resource in GraalVM's native image
-            page = getClass().getResource("/" + page.getPath());
+            page = getClass().getResource(page.getPath());
             super.setPage(page);
             HTMLDocument doc = (HTMLDocument) getDocument();
             if (doc.getBase() == null) {

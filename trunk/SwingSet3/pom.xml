@@ -13,7 +13,7 @@
     <properties>
         <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <native.maven.plugin.version>0.9.11</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.17</native.maven.plugin.version>
         <main.class>com.github.chirontt.graalvm.swingset3.NativeSwingSet3</main.class>
         <splash.image>com/sun/swingset3/resources/images/splash.png</splash.image>
         <!-- system properties for the application when run by exec:exec command;
@@ -130,6 +130,7 @@
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
                 <version>${native.maven.plugin.version}</version>
+                <extensions>true</extensions>
                 <executions>
                     <!-- native image test in Linux -->
                     <!-- execution>
@@ -146,7 +147,7 @@
                     <execution>
                         <id>build-native-linux</id>
                         <goals>
-                            <goal>build</goal>
+                            <goal>compile-no-fork</goal>
                         </goals>
                         <phase>package</phase>
                         <configuration>
@@ -183,7 +184,7 @@
                     <execution>
                         <id>build-native-windows</id>
                         <goals>
-                            <goal>build</goal>
+                            <goal>compile-no-fork</goal>
                         </goals>
                         <phase>package</phase>
                         <configuration>
@@ -202,9 +203,6 @@
                                 <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
                                 <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
                             </buildArgs>
-                            <!-- temp fix for the "Unsupported OptionOrigin" error in GraalVM 22.1.0 version in Windows
-                                 (see https://github.com/oracle/graal/issues/4502) -->
-                            <useArgFile>false</useArgFile>
                         </configuration>
                     </execution>
                 </executions>
