@@ -162,6 +162,7 @@ javadoc {
 }
 
 graalvmNative {
+    toolchainDetection = false
     binaries {
         main {
             imageName = project.name
@@ -171,7 +172,7 @@ graalvmNative {
             fallback = false
 
             if (currentPlatform == 'linux') {
-                jvmArgs.add('-Djava.awt.headless=false')
+                systemProperties = ['java.awt.headless': 'false']
             }
 
             buildArgs.add('--enable-url-protocols=http,https')
