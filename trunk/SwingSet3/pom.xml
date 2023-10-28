@@ -13,14 +13,13 @@
     <properties>
         <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <native.maven.plugin.version>0.9.23</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.28</native.maven.plugin.version>
         <main.class>com.github.chirontt.graalvm.swingset3.NativeSwingSet3</main.class>
         <splash.image>com/sun/swingset3/resources/images/splash.png</splash.image>
         <!-- system properties for the application when run by exec:exec command;
              can be specified on the command line with -Dsys.props="..."
         -->
         <sys.props></sys.props>
-        <native.image.dir.name>native-image-${current.platform}</native.image.dir.name>
         <!-- flags to skip plugin execution or not, in each environment -->
         <skip.in.linux>true</skip.in.linux>
         <skip.in.macos>true</skip.in.macos>
@@ -152,7 +151,6 @@
                         <phase>package</phase>
                         <configuration>
                             <skip>${skip.in.linux}</skip>
-                            <!-- outputDir>${project.build.directory}/${native.image.dir.name}</outputDir -->
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
                             <debug>true</debug>
@@ -166,9 +164,8 @@
                                 <buildArg>--enable-https</buildArg>
                                 <buildArg>--report-unsupported-elements-at-runtime</buildArg>
                                 <buildArg>--native-image-info</buildArg>
+                                <buildArg>-march=compatibility</buildArg> <!-- only available in GraalVM for JDK 17+ -->
                                 <buildArg>-H:+TraceNativeToolUsage</buildArg>
-                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
-                                <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
                             </buildArgs>
                         </configuration>
                     </execution>
@@ -192,20 +189,21 @@
                         <phase>package</phase>
                         <configuration>
                             <skip>${skip.in.windows}</skip>
-                            <!-- outputDir>${project.build.directory}/${native.image.dir.name}</outputDir -->
                             <imageName>${project.name}</imageName>
                             <mainClass>${main.class}</mainClass>
                             <debug>true</debug>
                             <verbose>true</verbose>
                             <fallback>false</fallback>
+                            <jvmArgs>
+                                <arg>-Djava.awt.headless=false</arg>
+                            </jvmArgs>
                             <buildArgs>
                                 <buildArg>--enable-http</buildArg>
                                 <buildArg>--enable-https</buildArg>
                                 <buildArg>--report-unsupported-elements-at-runtime</buildArg>
                                 <buildArg>--native-image-info</buildArg>
+                                <buildArg>-march=compatibility</buildArg> <!-- only available in GraalVM for JDK 17+ -->
                                 <buildArg>-H:+TraceNativeToolUsage</buildArg>
-                                <buildArg>-H:TempDirectory=${project.build.directory}/tmp/${native.image.dir.name}</buildArg>
-                                <buildArg>-H:Path=${project.build.directory}/${native.image.dir.name}</buildArg>
                             </buildArgs>
                         </configuration>
                     </execution>
@@ -225,7 +223,7 @@
                         </goals>
                         <configuration>
                             <skip>${skip.in.windows}</skip>
-                            <outputDirectory>${project.build.directory}/${native.image.dir.name}/lib</outputDirectory>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${java.home}/lib</directory>
@@ -275,7 +273,7 @@
                             <executable>editbin.exe</executable>
                             <arguments>
                                 <argument>/subsystem:windows</argument>
-                                <argument>${project.build.directory}/${native.image.dir.name}/${project.name}.exe</argument>
+                                <argument>${project.build.directory}/${project.name}.exe</argument>
                             </arguments>
                             <!-- ignore the return error codes: 0, 1342 -->
                             <successCodes>
@@ -285,40 +283,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- remove unneeded .dll/.txt files -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>remove-unneeded-dll-files</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <target>
-                        <move todir="${project.build.directory}/tmp/${native.image.dir.name}"
-                              failonerror="false" quiet="true">
-                            <fileset dir="${project.build.directory}/${native.image.dir.name}">
-                                <include name="*.dll"/>
-                                <include name="*.txt"/>
-                                <!-- keep the shim DLLs and some -->
-                                <exclude name="awt.dll"/>
-                                <exclude name="fontmanager.dll"/>
-                                <exclude name="java.dll"/>
-                                <exclude name="jvm.dll"/>
-                            </fileset>
-                        </move>
-                        <move file="${project.build.directory}/${native.image.dir.name}/reports"
-                              tofile="${project.build.directory}/tmp/${native.image.dir.name}/reports"
-                              failonerror="false" quiet="true"/>
-                    </target>
-                </configuration>
             </plugin>
         </plugins>
     </build>

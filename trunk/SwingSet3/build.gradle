@@ -1,10 +1,10 @@
 plugins {
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.9.23'
+    id 'org.graalvm.buildtools.native' version '0.9.28'
 }
 
 tasks.wrapper {
-    gradleVersion = '8.1.1'
+    gradleVersion = '8.4'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -16,7 +16,7 @@ ext {
     mainClassName = 'com.github.chirontt.graalvm.swingset3.NativeSwingSet3'
     splashImage = 'com/sun/swingset3/resources/images/splash.png'
     currentPlatform = getCurrentPlatform()
-    nativeImageDirName = "native-image-$currentPlatform"
+    nativeImageDirName = "native/nativeCompile"
 }
 
 //detect the OS (assuming 64-bit, on Intel/AMD hardware)
@@ -123,34 +123,6 @@ task markWindowsGui(type: Exec) {
     commandLine 'editbin.exe', '/subsystem:windows', file("$buildDir/$nativeImageDirName/${project.name}.exe").path
 }
 
-//remove unneeded .dll/.txt/.pdb files
-task removeUnneededDllFiles {
-    doLast {
-        if (file("$buildDir/$nativeImageDirName").exists()) {
-            ant.move(todir: "$buildDir/tmp/$nativeImageDirName") {
-                fileset(dir: "$buildDir/$nativeImageDirName") {
-                    include name: '*.dll'
-                    include name: '*.pdb'
-                    include name: '*.txt'
-                    //keep the shim DLLs and some
-                    exclude name: 'awt.dll'
-                    exclude name: 'fontmanager.dll'
-                    exclude name: 'java.dll'
-                    exclude name: 'jvm.dll'
-                }
-            }
-        }
-        if (file("$buildDir/$nativeImageDirName/reports").exists()) {
-            ant.move(file: "$buildDir/$nativeImageDirName/reports",
-                     tofile: "$buildDir/tmp/$nativeImageDirName/reports")
-        }
-        if (file("$buildDir/$nativeImageDirName/sources").exists()) {
-            ant.move(file: "$buildDir/$nativeImageDirName/sources",
-                     tofile: "$buildDir/tmp/$nativeImageDirName/sources")
-        }
-    }
-}
-
 javadoc {
     options.encoding = 'UTF-8'
     //turn off doclint errors/warnings output (but some warnings are still in the output)
@@ -171,15 +143,14 @@ graalvmNative {
             verbose = true
             fallback = false
 
-            if (currentPlatform == 'linux') {
+            //if (currentPlatform == 'linux') {
                 systemProperties = ['java.awt.headless': 'false']
-            }
+            //}
 
             buildArgs.add('--enable-url-protocols=http,https')
             buildArgs.add('--report-unsupported-elements-at-runtime')
             buildArgs.add('--native-image-info')
-            buildArgs.add("-H:Path=$buildDir/$nativeImageDirName")
-            buildArgs.add("-H:TempDirectory=$buildDir/tmp/$nativeImageDirName")
+            buildArgs.add('-march=compatibility') //only available in GraalVM for JDK 17+
             buildArgs.add('-H:+TraceNativeToolUsage')
 
             useFatJar = false
@@ -194,6 +165,5 @@ tasks.named("nativeCompile") {
     if (currentPlatform == 'windows') {
         finalizedBy copyFontConfigFiles, markWindowsGui
     }
-    finalizedBy removeUnneededDllFiles
 }
 

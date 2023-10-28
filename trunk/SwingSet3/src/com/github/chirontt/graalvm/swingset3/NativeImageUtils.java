@@ -11,8 +11,8 @@ import java.util.jar.Manifest;
 
 public class NativeImageUtils {
 
-	private NativeImageUtils() {
-	}
+    private NativeImageUtils() {
+    }
 
     public static Optional<String> getManifestValue(String mainClass, String attributeName) {
         if (mainClass == null || mainClass.isEmpty()) return Optional.empty();
