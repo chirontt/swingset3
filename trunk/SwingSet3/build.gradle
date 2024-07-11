@@ -1,10 +1,10 @@
 plugins {
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.9.28'
+    id 'org.graalvm.buildtools.native' version '0.10.2'
 }
 
 tasks.wrapper {
-    gradleVersion = '8.4'
+    gradleVersion = '8.8'
     distributionType = Wrapper.DistributionType.ALL
 }
 
