@@ -1,5 +1,8 @@
 # SwingSet3 + GraalVM native image
 
+[![Github Actions Build Status](https://github.com/chirontt/swingset3/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/chirontt/swingset3/actions/workflows/gradle-build.yml)
+[![Github Actions Build Status](https://github.com/chirontt/swingset3/actions/workflows/maven-build.yml/badge.svg)](https://github.com/chirontt/swingset3/actions/workflows/maven-build.yml)
+
 This project aims to produce platform-specific, native executable of the `SwingSet3` application
 using the [GraalVM native-image](https://www.graalvm.org/reference-manual/native-image) utility.
 
@@ -12,6 +15,14 @@ The [GraalVM native-image](https://www.graalvm.org/reference-manual/native-image
 shows how to set up GraalVM and its native-image utility for common platforms.
 [Gluon](https://gluonhq.com/) also provides some setup [details](https://docs.gluonhq.com/#_platforms)
 for GraalVM native-image creation.
+
+Actually, for native compiling of a *Swing-based application* like this project, an implementation of 
+GraalVM called the [Liberica Native Image Kit](https://bell-sw.com/pages/downloads/native-image-kit/)
+can produce a *working* native executable better than the stock
+[GraalVM-CE](https://github.com/graalvm/graalvm-ce-builds) software could, for some reason.
+And this Liberica NIK software is used in the GitHub Actions
+[build scripts](https://github.com/chirontt/swingset3/tree/master/.github/workflows) of this project
+to successfully build and generate the relevant *working* native images for Linux and Windows.
 
 The GraalVM native-image utility will use the configuration files in
 `graal-cfg/<platform>/META-INF/native-image` folder to assist in the native image generation.
@@ -37,21 +48,21 @@ To produce a native executable, execute the `nativeCompile` task:
 The `nativeCompile` task would take a while to compile the application and link into an executable file.
 The resulting `SwingSet3` executable file is:
 
-	build/native-image-linux/SwingSet3
+	build/native/nativeCompile/SwingSet3
 
 (or if building on a Windows machine, the executable file is:
 
-	build\native-image-windows\SwingSet3.exe
+	build\native\nativeCompile\SwingSet3.exe
 
 )
 
 which can then be run directly:
 
-	./build/native-image-linux/SwingSet3
+	./build/native/nativeCompile/SwingSet3
 
 (or if building on a Windows machine:
 
-	build\native-image-windows\SwingSet3.exe
+	build\native\nativeCompile\SwingSet3.exe
 
 )
 
@@ -70,21 +81,21 @@ To produce a native executable, execute the `package` task:
 The `package` task would take a while to compile the application and link into an executable file.
 The resulting `SwingSet3` executable file is:
 
-	target/native-image-linux/SwingSet3
+	target/SwingSet3
 
 (or if building on a Windows machine, the executable file is:
 
-	target\native-image-windows\SwingSet3.exe
+	target\SwingSet3.exe
 
 )
 
 which can then be run directly:
 
-	./target/native-image-linux/SwingSet3
+	./target/SwingSet3
 
 (or if building on a Windows machine:
 
-	target\native-image-windows\SwingSet3.exe
+	target\SwingSet3.exe
 
 )
 
@@ -95,69 +106,88 @@ The uber jar can then be run with the `java -jar` command:
 
 ## Caveats on Native Image
 
-On Linux platform, such as Ubuntu, the resultant native executable is a single file, `SwingSet3`,
-of about 75MB in size (by GraalVM 22.0.0.2 version). Running the `ldd` command on it will show
-all the dynamic libraries (`.so`) from standard library paths required by the executable at runtime:
+### Linux native executable
 
-	$ ldd build/native-image-linux/SwingSet3
-	    linux-vdso.so.1 (0x00007ffd23575000)
-	    libX11.so.6 => /lib/x86_64-linux-gnu/libX11.so.6 (0x00007fd5d2fd8000)
-	    libXrender.so.1 => /lib/x86_64-linux-gnu/libXrender.so.1 (0x00007fd5d2dce000)
-	    libXext.so.6 => /lib/x86_64-linux-gnu/libXext.so.6 (0x00007fd5d2db9000)
-	    libXi.so.6 => /lib/x86_64-linux-gnu/libXi.so.6 (0x00007fd5d2da7000)
-	    libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fd5d2bc5000)
-	    libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fd5d2a76000)
-	    libfreetype.so.6 => /lib/x86_64-linux-gnu/libfreetype.so.6 (0x00007fd5d29b5000)
-	    libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007fd5d2999000)
-	    libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fd5d2976000)
-	    libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fd5d2970000)
-	    libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fd5d2955000)
-	    libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd5d2763000)
-	    libxcb.so.1 => /lib/x86_64-linux-gnu/libxcb.so.1 (0x00007fd5d2737000)
-	    /lib64/ld-linux-x86-64.so.2 (0x00007fd5d810b000)
-	    libpng16.so.16 => /lib/x86_64-linux-gnu/libpng16.so.16 (0x00007fd5d26ff000)
-	    libXau.so.6 => /lib/x86_64-linux-gnu/libXau.so.6 (0x00007fd5d26f9000)
-	    libXdmcp.so.6 => /lib/x86_64-linux-gnu/libXdmcp.so.6 (0x00007fd5d26f1000)
-	    libbsd.so.0 => /lib/x86_64-linux-gnu/libbsd.so.0 (0x00007fd5d26d7000)
+On Linux platform, such as Ubuntu, the resultant native image consists of multiple files: the executable
+`SwingSet3`, plus a set of `.so` library files. Here are their structure after a Gradle (or Maven)
+native-image build, in the `build/native/nativeCompile/` (for Gradle) or `target/` directory (for Maven):
 
-On Windows 10 platform, the resultant native image consists of multiple files: the executable
+	build/native/nativeCompile/ (or target/)
+	    libawt.so
+	    libawt_headless.so
+	    libawt_xawt.so
+	    libfontmanager.so
+	    libfreetype.so
+	    libjavajpeg.so
+	    libjava.so
+	    libjsound.so
+	    libjvm.so
+	    liblcms.so
+	    SwingSet3
+
+Many `.so` library files in the above *nativeCompile/* or *target/* folder are not needed at runtime
+(at least not by this `SwingSet3` application) so they can be manually removed, resulting in the
+final list of native executable files for Linux:
+
+	build/native/nativeCompile/ (or target/)
+	    libawt.so
+	    libawt_xawt.so
+	    libfontmanager.so
+	    libjavajpeg.so
+	    libjava.so
+	    libjvm.so
+	    SwingSet3
+
+All these files in the *nativeCompile/* or *target/* folder must stay together
+in the same structure, with names unchanged after the build, so that the `SwingSet3` native
+executable can be run successfully in Linux.
+
+Also, running the `ldd` command on the executable `SwingSet3` file will show all the dynamic libraries (`.so`)
+from system library paths required by the executable at runtime:
+
+	$ ldd build/native/nativeCompile/SwingSet3 (or $ ldd target/SwingSet3)
+	    linux-vdso.so.1 (0x00007fffdf7ca000)
+	    libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x000077d226d86000)
+	    libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000077d220e00000)
+	    /lib64/ld-linux-x86-64.so.2 (0x000077d226dbe000)
+
+### Windows native executable
+
+On Windows 11 platform, the resultant native image consists of multiple files: the executable
 `SwingSet3.exe`, plus a set of `.dll` files, and some `font` config files from the JDK are also
 included. Here are their structure after a Gradle (or Maven) native-image build:
 
-	build\ (or target\)
-	    native-image-windows\
-	        lib\
-	            fontconfig.bfc
-	            fontconfig.properties.src
-	        awt.dll
-	        fontmanager.dll
-	        freetype.dll
-	        java.dll
-	        javaaccessbridge.dll
-	        javajpeg.dll
-	        jawt.dll
-	        jsound.dll
-	        jvm.dll
-	        lcms.dll
-	        sunmscapi.dll
-	        SwingSet3.exe
+	build\native\nativeCompile\ (or target\)
+	    lib\
+	        fontconfig.bfc
+	        fontconfig.properties.src
+	    awt.dll
+	    fontmanager.dll
+	    freetype.dll
+	    java.dll
+	    javaaccessbridge.dll
+	    javajpeg.dll
+	    jawt.dll
+	    jsound.dll
+	    jvm.dll
+	    lcms.dll
+	    SwingSet3.exe
 
-Many .dll files in the above *native-image-windows* folder are not needed at runtime
-(at least not by the `SwingSet3` application) so they can be removed, resulting in the
+Many `.dll` files in the above *nativeCompile\\* or *target\\* folder are not needed at runtime
+(at least not by this `SwingSet3` application) so they can be manually removed, resulting in the
 final build folder structure for Windows:
 
-	build\ (or target\)
-	    native-image-windows\
-	        lib\
-	            fontconfig.bfc
-	            fontconfig.properties.src
-	        awt.dll
-	        fontmanager.dll
-	        java.dll
-	        jvm.dll
-	        SwingSet3.exe
+	build\native\nativeCompile\ (or target\)
+	    lib\
+	        fontconfig.bfc
+	        fontconfig.properties.src
+	    awt.dll
+	    fontmanager.dll
+	    java.dll
+	    jvm.dll
+	    SwingSet3.exe
 
-All files in the *native-image-windows* folder (including the *lib* sub-folder) must stay together
+All files in the *nativeCompile\\* or *target\\* folder (including the *lib\\* sub-folder) must stay together
 in the same structure, with names unchanged after the build, so that the `SwingSet3.exe` native
 executable can be run successfully in Windows.
 

@@ -1,10 +1,10 @@
 plugins {
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.10.2'
+    id 'org.graalvm.buildtools.native' version '0.10.6'
 }
 
 tasks.wrapper {
-    gradleVersion = '8.8'
+    gradleVersion = '8.13'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -34,7 +34,7 @@ repositories {
 }
 
 compileJava {
-    options.release = 11  //use JDK11+ for compiling & running
+    options.release = 17
     options.encoding = 'UTF-8'
 }
 
@@ -82,7 +82,7 @@ task uberJar(type: Jar) {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    duplicatesStrategy 'exclude'
+    duplicatesStrategy = 'exclude'
 }
 
 application {
@@ -118,7 +118,8 @@ task copyFontConfigFiles(type: Copy) {
     into "$buildDir/$nativeImageDirName/lib"
 }
 
-//mark the native executable as Windows GUI program
+//mark the native executable as Windows GUI program,
+//assuming the build is run inside 'Developer Command Prompt for VS' command shell
 task markWindowsGui(type: Exec) {
     commandLine 'editbin.exe', '/subsystem:windows', file("$buildDir/$nativeImageDirName/${project.name}.exe").path
 }
@@ -143,9 +144,7 @@ graalvmNative {
             verbose = true
             fallback = false
 
-            //if (currentPlatform == 'linux') {
-                systemProperties = ['java.awt.headless': 'false']
-            //}
+            systemProperties = ['java.awt.headless': 'false']
 
             buildArgs.add('--enable-url-protocols=http,https')
             buildArgs.add('--report-unsupported-elements-at-runtime')
